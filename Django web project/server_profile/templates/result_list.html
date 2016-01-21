@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<title>Test Results</title>
+	</head>
+	<body>
+		<table border="1">
+		{% if results %}
+			<tr>
+			<td>Server</td>
+			<td>Report time</td>
+			<td>Test VM</td>
+			<td>Test spec</td>
+			<td>Total IOPS</td>
+			<td>Write IOPS</td>
+			<td>Read IOPS</td>
+			<td>Min read latency</td>
+			<td>Max read latency</td>
+			<td>Avg read latency</td>
+			<td>Min write latency</td>
+			<td>Max write latency</td>
+			<td>Avg write latency</td>
+			</tr>
+		{% for r in results %}
+			<tr>
+			<td>{{ r.server.name }}</td>
+			<td>{{ r.report_time|date:"Y-m-d H:i" }}</td>
+			<td>{{ r.test_vm }}</td>
+			<td>{{ r.test_spec }}</td>
+			<td>{{ r.total_iops }}</td>
+			<td>{{ r.read_iops }}</td>
+			<td>{{ r.write_iops }}</td>
+			<td>{{ r.min_read_latency|floatformat:2 }}</td>
+			<td>{{ r.max_read_latency|floatformat:2 }}</td>
+			<td>{{ r.avg_read_latency|floatformat:2 }}</td>
+			<td>{{ r.min_write_latency|floatformat:2 }}</td>
+			<td>{{ r.max_write_latency|floatformat:2 }}</td>
+			<td>{{ r.avg_write_latency|floatformat:2 }}</td>
+			
+			</tr>
+		{% endfor %}
+		{% endif %}
+		</table>
+	</body>
+</html>

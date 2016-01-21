@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>Server List</title>
+	</head>
+	<body>
+		{% if servers %}
+		<table border="1">
+			<tr>
+			<td>Server</td>
+			</tr>
+		{% for s in servers %}
+			<tr>
+			<td><a href="{% url "test_vm_list" server_name=s.name %}">{{ s.name }}</a></td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% else %}
+			No server found.
+		{% endif %}
+		
+	</body>
+</html>

@@ -1,0 +1,219 @@
+<html>
+	<head>
+		<title>Test result</title>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+ google.charts.load('current', {
+  packages: ['corechart', 'line', 'controls']
+});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+  var iops_dashboard = new google.visualization.Dashboard(
+    document.getElementById('iops_dashboard_div'));
+
+  var iops_control = new google.visualization.ControlWrapper({
+    'controlType': 'ChartRangeFilter',
+    'containerId': 'iops_control_div',
+    'options': {
+      // Filter by the date axis.
+      'filterColumnIndex': 0,
+      'ui': {
+        'chartType': 'LineChart',
+        'chartOptions': {
+          "width": 900,
+          "height": 100,
+		  "chartArea": {
+		  
+		  "width": "90%"
+		  },
+        },
+        // Display a single series that shows the closing value of the stock.
+        // Thus, this view has two columns: the date (axis) and the stock value (line series).
+        'chartView': {
+          'columns': [0, 1]
+        },
+        // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+        'minRangeSize': 86400000,
+      }
+    },
+    // Initial range: 2012-02-09 to 2012-03-20.
+    'state': {
+      'range': {
+        'start': new Date("{{ iops_init_start_date|date:"r" }}"),
+        'end': new Date("{{ iops_init_end_date|date:"r" }}")
+      }
+    }
+  });
+
+  var iops_chart = new google.visualization.ChartWrapper({
+    'chartType': 'LineChart',
+    'containerId': 'iops_chart_div',
+    'options': {
+      // size related
+      "width": 900,
+      "height": 500,
+      "chartArea": {
+        'height': '80%',
+        'width': '90%'
+      },
+
+      "vAxis": {
+        "format": "short"
+      },
+
+      "titlePosition": "in",
+      "title": 'IOPS',
+
+      // legend and selection related
+      "legend": {
+        "position": "in"
+      },
+      "selectionMode": "multiple",
+
+    },
+  });
+
+  var iopsData = new google.visualization.DataTable();
+  iopsData.addColumn('datetime', 'Date Time');
+  iopsData.addColumn('number', 'Total IOPS');
+  iopsData.addColumn('number', 'Read IOPS');
+  iopsData.addColumn('number', 'Write IOPS');
+  iopsData.addRows([
+	{% for data in iops_datas %}
+	[ new Date("{{ data.0|date:"r" }}"), {{ data.1 }}, {{ data.2 }}, {{ data.3 }}],
+	{% endfor %}
+  ]);
+
+  iops_dashboard.bind(iops_control, iops_chart);
+  iops_dashboard.draw(iopsData);
+
+      
+      
+      
+      
+      
+  var latency_dashboard = new google.visualization.Dashboard(
+    document.getElementById('latency_dashboard_div'));
+
+  var latency_control = new google.visualization.ControlWrapper({
+    'controlType': 'ChartRangeFilter',
+    'containerId': 'latency_control_div',
+    'options': {
+      // Filter by the date axis.
+      'filterColumnIndex': 0,
+      'ui': {
+        'chartType': 'LineChart',
+        'chartOptions': {
+          "width": 900,
+          "height": 100,
+		  "chartArea": {
+		  
+		  "width": "90%"
+		  },
+        },
+        // Display a single series that shows the closing value of the stock.
+        // Thus, this view has two columns: the date (axis) and the stock value (line series).
+        'chartView': {
+          'columns': [0, 1]
+        },
+        // 1 day in milliseconds = 24 * 60 * 60 * 1000 = 86,400,000
+        'minRangeSize': 86400000,
+      }
+    },
+    // Initial range: 2012-02-09 to 2012-03-20.
+    'state': {
+      'range': {
+        'start': new Date("{{ latency_init_start_date|date:"r" }}"),
+        'end': new Date("{{ latency_init_end_date|date:"r" }}")
+      }
+    }
+  });
+
+  var latency_chart = new google.visualization.ChartWrapper({
+    'chartType': 'LineChart',
+    'containerId': 'latency_chart_div',
+    'options': {
+      // size related
+      "width": 900,
+      "height": 500,
+      "chartArea": {
+        'height': '80%',
+        'width': '90%'
+      },
+
+      "vAxis": {
+        "format": "short"
+      },
+
+      "titlePosition": "in",
+      "title": 'Latency',
+
+      // legend and selection related
+      "legend": {
+        "position": "in"
+      },
+      "selectionMode": "multiple",
+
+    },
+  });
+
+  var latency_data = new google.visualization.DataTable();
+  latency_data.addColumn('datetime', 'Date Time');
+  latency_data.addColumn('number', 'Read Latency');
+  latency_data.addColumn('number', 'Write Latency');
+  latency_data.addRows([
+	{% for data in latency_datas %}
+	[ new Date("{{ data.0|date:"r" }}"), {{ data.1 }}, {{ data.2 }}],
+	{% endfor %}
+  ]);
+
+  latency_dashboard.bind(latency_control, latency_chart);
+  latency_dashboard.draw(latency_data);
+    }
+</script>
+	</head>
+	<body>
+<center><h1>{{server_name}} {{test_vm}} {{test_spec}}</h1></center>
+<a href="{% url "server_list" %}">Back to server list</a>
+<table board="1">
+<tr>
+	<td>
+	<div id="iops_dashboard_div">
+	<table>
+		<tr>
+			<td>
+				<div id="iops_chart_div"></div>
+			<td>
+		</tr>
+		<tr>
+			<td>
+				<div id="iops_control_div"></div>
+			<td>
+		</tr>
+	</table>
+	</div>
+	</td>
+</tr>
+
+<tr>
+	<td>
+	<div id="latency_dashboard_div">
+	<table>
+		<tr>
+			<td>
+				<div id="latency_chart_div"></div>
+			<td>
+		</tr>
+		<tr>
+			<td>
+				<div id="latency_control_div"></div>
+			<td>
+		</tr>
+	</table>
+	</div>
+	</td>
+</tr>
+</table>
+	</body>
+</html>

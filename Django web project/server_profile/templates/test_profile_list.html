@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>Test profile list</title>
+	</head>
+	<body>
+		{% if test_specs %}
+		<table border="1">
+			<tr>
+			<td>Profile</td>
+			</tr>
+		{% for profile in test_specs %}
+			<tr>
+			<td><a href="{% url "display_test_profile_result" server_name=server_name test_vm=test_vm test_spec=profile.test_spec %}">{{ profile.test_spec }}</a></td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% else %}
+		No test profile found.
+		{% endif %}
+		
+	</body>
+</html>
