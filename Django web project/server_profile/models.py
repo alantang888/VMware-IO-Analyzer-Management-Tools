@@ -52,4 +52,4 @@ class Result(models.Model):
             datetime.datetime.strftime(self.report_time, date_time_format))
     
     class Meta:
-        unique_together = ("report_time", "test_vm")
+        unique_together = ("report_time", "test_vm", "server")
