@@ -70,14 +70,14 @@ def test_vm_list(request, server_name):
 def test_profile_list(request, server_name, test_vm):
     server_name = urlunquote(server_name)
     test_vm = urlunquote(test_vm)
-    test_specs = Result.objects.filter(test_vm = test_vm).values('test_spec').distinct()
+    test_specs = Result.objects.filter(server__name = server_name, test_vm = test_vm).values('test_spec').distinct()
     return render(request, "test_profile_list.html", locals())
     
 def display_test_profile_result(request, server_name, test_vm, test_spec):
     server_name = urlunquote(server_name)
     test_vm = urlunquote(test_vm)
     test_spec = urlunquote(test_spec)
-    iops_datas = Result.objects.filter(test_vm = test_vm, test_spec= test_spec).order_by("report_time").values_list("report_time","total_iops", "read_iops", "write_iops")
+    iops_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).order_by("report_time").values_list("report_time","total_iops", "read_iops", "write_iops")
     latency_datas = Result.objects.filter(test_vm = test_vm, test_spec= test_spec).order_by("report_time").values_list("report_time","avg_read_latency", "avg_write_latency")
     
     iops_init_end_date = iops_datas.last()[0]
