@@ -7,6 +7,7 @@ import logging
 import time
 import json
 import requests
+import shutil
 from collections import namedtuple
 from requests.exceptions import ConnectionError
 
@@ -225,6 +226,8 @@ if __name__ == "__main__":
             logging.error("Upload not success, program exit.")
             sys.exit(3)
             
+        # if upload success, remove result directory
+        shutil.rmtree(os.path.join(RESULT_BASE_DIRECTORY, dir.name))
         lastProcessDirTime = dir.ctime
     
     logging.info("Processed {} directory(s), last processed timestamp is {}.".format(len(baseDirItems),lastProcessDirTime))
