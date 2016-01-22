@@ -64,13 +64,13 @@ def server_list(request):
 
 def test_vm_list(request, server_name):
     server_name = urlunquote(server_name)
-    test_vms =  Result.objects.filter(server__name = server_name).values('test_vm').distinct()
+    test_vms =  Result.objects.filter(server__name = server_name).values('test_vm').order_by("test_vm").distinct()
     return render(request, "test_vm_list.html", locals())
 
 def test_profile_list(request, server_name, test_vm):
     server_name = urlunquote(server_name)
     test_vm = urlunquote(test_vm)
-    test_specs = Result.objects.filter(server__name = server_name, test_vm = test_vm).values('test_spec').distinct()
+    test_specs = Result.objects.filter(server__name = server_name, test_vm = test_vm).values('test_spec').order_by("test_spec").distinct()
     return render(request, "test_profile_list.html", locals())
     
 def display_test_profile_result(request, server_name, test_vm, test_spec):
