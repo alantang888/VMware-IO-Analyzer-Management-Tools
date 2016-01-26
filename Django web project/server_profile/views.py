@@ -78,7 +78,7 @@ def display_test_profile_result(request, server_name, test_vm, test_spec):
     test_vm = urlunquote(test_vm)
     test_spec = urlunquote(test_spec)
     iops_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).order_by("report_time").values_list("report_time","total_iops", "read_iops", "write_iops")
-    latency_datas = Result.objects.filter(test_vm = test_vm, test_spec= test_spec).order_by("report_time").values_list("report_time","avg_read_latency", "avg_write_latency")
+    latency_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).order_by("report_time").values_list("report_time","avg_read_latency", "avg_write_latency")
     
     iops_init_end_date = iops_datas.last()[0]
     iops_init_start_date = iops_init_end_date - datetime.timedelta(7)
