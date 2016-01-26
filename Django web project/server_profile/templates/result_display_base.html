@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>{% block title %}Un-named result display page{% endblock %}</title>
+{% block java_script_on_title %}{% endblock %}
+</head>
+<body>
+<center><h1>{% block body_title %} 
+{% if server_name %} <a href="{% url "test_vm_list" server_name=server_name %}">{{server_name}}</a> {% endif %}
+{% if server_name %} <a href="{% url "test_profile_list" server_name=server_name test_vm=test_vm %}">{{test_vm}}</a> {% endif %}
+{% if server_name %} {{test_spec}} {% endif %}
+  {% endblock %}</h1></center>
+<a href="{% url "server_list" %}">Back to server list</a></p>
+{% block main_contain %}This Block not overrided by child page.{% endblock %}
+</body>
+</html>

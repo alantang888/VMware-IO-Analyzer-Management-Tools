@@ -1,6 +1,6 @@
-<html>
-	<head>
-		<title>Test result</title>
+{% extends "result_display_base.html" %}
+{% block title %}Test result{% endblock %}
+{% block java_script_on_title %}
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
  google.charts.load('current', {
@@ -172,10 +172,9 @@ function drawBasic() {
   latency_dashboard.draw(latency_data);
     }
 </script>
-	</head>
-	<body>
-<center><h1>{{server_name}} {{test_vm}} {{test_spec}}</h1></center>
-<a href="{% url "server_list" %}">Back to server list</a>
+{% endblock %}
+
+{% block main_contain %}
 <table board="1">
 <tr>
 	<td>
@@ -215,5 +214,4 @@ function drawBasic() {
 	</td>
 </tr>
 </table>
-	</body>
-</html>
+{% endblock %}

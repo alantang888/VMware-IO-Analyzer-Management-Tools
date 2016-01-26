@@ -1,8 +1,7 @@
-<html>
-	<head>
-		<title>Server List</title>
-	</head>
-	<body>
+{% extends "result_display_base.html" %}
+
+{% block title %}Server List{% endblock %}
+{% block main_contain %}
 		{% if servers %}
 		<table border="1">
 			<tr>
@@ -17,6 +16,4 @@
 		{% else %}
 			No server found.
 		{% endif %}
-		
-	</body>
-</html>
+{% endblock %}

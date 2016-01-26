@@ -1,8 +1,7 @@
-<html>
-	<head>
-		<title>Test profile list</title>
-	</head>
-	<body>
+{% extends "result_display_base.html" %}
+
+{% block title %}Test profile list{% endblock %}
+{% block main_contain %}
 		{% if test_specs %}
 		<table border="1">
 			<tr>
@@ -17,6 +16,4 @@
 		{% else %}
 		No test profile found.
 		{% endif %}
-		
-	</body>
-</html>
+{% endblock%}

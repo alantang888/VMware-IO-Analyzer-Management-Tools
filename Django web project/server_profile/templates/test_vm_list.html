@@ -1,23 +1,21 @@
-<html>
-	<head>
-		<title>Test VM List</title>
-	</head>
-	<body>
-		<table border="1">
-		{% if test_vms %}
-			<tr>
-			<td>Test VM</td>
-			</tr>
-		{% for vm in test_vms %}
-			<tr>
-			<td><a href="{% url "test_profile_list" server_name=server_name test_vm=vm.test_vm %}">{{ vm.test_vm }}</a></td>
-			</tr>
-		{% endfor %}
-		{% else %}
-			<tr>
-			<td>No test VM found.</td>
-			</tr>
-		{% endif %}
-		</table>
-	</body>
-</html>
+{% extends "result_display_base.html" %}
+
+{% block title %}Test VM List{% endblock %}
+{% block main_contain %}
+<table border="1">
+{% if test_vms %}
+	<tr>
+	<td>Test VM</td>
+	</tr>
+{% for vm in test_vms %}
+	<tr>
+	<td><a href="{% url "test_profile_list" server_name=server_name test_vm=vm.test_vm %}">{{ vm.test_vm }}</a></td>
+	</tr>
+{% endfor %}
+{% else %}
+	<tr>
+	<td>No test VM found.</td>
+	</tr>
+{% endif %}
+</table>
+{% endblock %}
