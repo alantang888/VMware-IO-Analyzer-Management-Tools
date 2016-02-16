@@ -73,7 +73,8 @@ def readResultFromFolder(targetFolderName):
     guestVmRegexResult = guestVmPatternRegex.search(iopsRawData)
     if guestVmRegexResult is None:
         logging.error("{!r} can't match IOPS result pattern.".format(iopsResultFile))
-        sys.exit(2)
+        return None
+        #sys.exit(2)
     
     total_iops = float(guestVmRegexResult.group("total_iops"))
     read_iops = float(guestVmRegexResult.group("read_iops"))
@@ -209,6 +210,8 @@ if __name__ == "__main__":
         
         logging.debug("Will process result directory {}, which ctime is {}.".format(dir.name, dir.ctime))
         result = readResultFromFolder(dir.name)
+        if result is None:
+            shutil.rmtree(os.path.join(RESULT_BASE_DIRECTORY, dir.name))
         
         # upload result to server by json
         logging.info("Will upload result json to {}.".format(UPLOAD_JSON_RESULT_URL))
