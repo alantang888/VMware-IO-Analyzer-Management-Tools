@@ -14,7 +14,6 @@ from requests.exceptions import ConnectionError
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 
 # ----- Need change for deploy -----
-SERVER_NAME_IN_DB="SCC ALC"
 UPLOAD_JSON_RESULT_URL="http://192.168.153.181:8000/result_upload/"
 # -----
 
@@ -135,7 +134,7 @@ def readResultFromFolder(targetFolderName):
     max_write_latency = max(writeLatency)
     avg_write_latency = sum(writeLatency)/len(writeLatency)
     
-    result = {"server_name": SERVER_NAME_IN_DB}
+    result = {}
     for i in ("report_time", "test_vm", "test_spec", "total_iops", "read_iops", "write_iops", "min_read_latency", "max_read_latency", "avg_read_latency", "min_write_latency", "max_write_latency", "avg_write_latency"):
         result[i] = locals()[i]
     

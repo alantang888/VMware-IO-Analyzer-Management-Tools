@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseForbidden
 from django.db import IntegrityError
+from django.db.models import Max
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from django.utils.http import urlunquote
-from server_profile.models import Server, Result
+from server_profile.models import Server, Result, Profile
 import re
 import json
 import datetime
@@ -39,12 +41,12 @@ def upload_test_result(request):
     
     posted_result = json.loads(request.body)
     tested_server = None
+    client_ip_addr = request.META["REMOTE_ADDR"]
     try:
-        tested_server = Server.objects.get(name=posted_result["server_name"])
+        tested_server = Server.objects.get(url__contains=client_ip_addr)
     except ObjectDoesNotExist as e:
         return HttpResponseServerError("Server does not exist, detail:{}".format(e.message))
     
-    del posted_result["server_name"]
     posted_result["report_time"] = datetime.datetime.fromtimestamp(posted_result["report_time"])
     test_result = Result(server=tested_server, **posted_result)
     try:
@@ -86,3 +88,33 @@ def display_test_profile_result(request, server_name, test_vm, test_spec):
     latency_init_start_date = latency_init_end_date - datetime.timedelta(7)
     
     return render(request, "display_test_profile_result.html", locals())
+
+def check_active_profile_run_status(request):
+    active_profiles = Profile.objects.filter(active=True).values("server__name", "name", "http_post_payload")
+    last_result = Result.objects.values("server__name", "test_vm", "test_spec").annotate(Max("report_time"))
+    
+    check_result = {"result":"OK", "error_message":""}
+    
+    for p in active_profiles:
+        for r in last_result:
+            if r["server__name"] != p["server__name"]:
+                continue
+            if r["test_spec"].replace("%","").lower() not in p["http_post_payload"]:
+                continue
+            if p["name"].split("-")[0] not in r["test_vm"]:
+                continue
+            
+            delta = timezone.now() - r["report_time__max"]
+            # check if the last test is over 2 hours will report error
+            if delta.seconds > 3600 * 2:
+                check_result["result"] = "ERROR"
+                check_result["error_message"] += "Server {!r} profile {!r} last result over 2 hours.\n".format(p["server__name"], p["name"])
+                break
+            else:
+                break
+        else:
+            check_result["result"] = "ERROR"
+            check_result["error_message"] += "Server {!r} profile {!r} no test result found.\n".format(p["server__name"], p["name"])
+            
+    return HttpResponse(json.dumps(check_result))
+    
