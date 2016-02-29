@@ -58,7 +58,7 @@ def readResultFromFolder(targetFolderName):
         iopsResultFile = itemFullPath
     else:
         logging.error("No IOPS results file found in {!r} directory. Or file not readable.".format(targetFolder))
-        sys.exit(2)
+        return None
     
     # read IOPS result
     try:
@@ -73,7 +73,6 @@ def readResultFromFolder(targetFolderName):
     if guestVmRegexResult is None:
         logging.error("{!r} can't match IOPS result pattern.".format(iopsResultFile))
         return None
-        #sys.exit(2)
     
     total_iops = float(guestVmRegexResult.group("total_iops"))
     read_iops = float(guestVmRegexResult.group("read_iops"))
@@ -101,7 +100,7 @@ def readResultFromFolder(targetFolderName):
                 sys.exit(2)
     if latencyResultFile is None:
         logging.error("No IOPS results file found in {!r} directory.".format(targetFolder))
-        sys.exit(2)
+        return None
     
     # read latency result
     try:
@@ -211,6 +210,7 @@ if __name__ == "__main__":
         result = readResultFromFolder(dir.name)
         if result is None:
             shutil.rmtree(os.path.join(RESULT_BASE_DIRECTORY, dir.name))
+            continue
         
         # upload result to server by json
         logging.info("Will upload result json to {}.".format(UPLOAD_JSON_RESULT_URL))
