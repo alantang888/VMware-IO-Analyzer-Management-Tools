@@ -17,7 +17,7 @@ class Server(models.Model):
 class Profile(models.Model):
     name = models.CharField(max_length=50)
     http_post_payload = models.TextField()
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True, db_index=True)
     server = models.ForeignKey(Server)
 
     def save(self, *args, **kwargs):
@@ -32,9 +32,9 @@ class Profile(models.Model):
         unique_together = ("name", "server")
         
 class Result(models.Model):
-    report_time = models.DateTimeField()
+    report_time = models.DateTimeField(db_index=True)
     test_vm = models.CharField(max_length=50)
-    test_spec = models.CharField(max_length=20)
+    test_spec = models.CharField(max_length=20, db_index=True)
     total_iops = models.FloatField()
     read_iops = models.FloatField()
     write_iops = models.FloatField()
@@ -53,3 +53,4 @@ class Result(models.Model):
     
     class Meta:
         unique_together = ("report_time", "test_vm", "server")
+        index_together = [["report_time", "server"]]
