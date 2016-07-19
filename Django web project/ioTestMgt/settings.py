@@ -127,3 +127,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# This project setting
+AGGREGATE_REPORT_PROFILE = "32k_60%Read_100%Rand"

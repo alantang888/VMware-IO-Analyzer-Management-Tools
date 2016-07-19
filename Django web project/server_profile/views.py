@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseForbidden
 from django.db import IntegrityError
-from django.db.models import Max
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.http import urlunquote
 from server_profile.models import Server, Result, Profile
+from django.db.models import Min, Max, Avg
+from django.conf import settings
 import re
 import json
 import datetime
@@ -119,4 +120,49 @@ def check_active_profile_run_status(request):
             check_result["error_message"] += "Server {!r} profile {!r} no test result found.\n".format(p["server__name"], p["name"])
             
     return HttpResponse(json.dumps(check_result))
+
+def get_result_by_test_spec(request):
+    test_specs = Result.objects.values('test_spec').order_by("test_spec").distinct()
+    return render(request, "test_spec_list.html", locals())
+
+def test_spec_result_list(request, test_spec, number_of_day):
+    if number_of_day is None:
+        number_of_day = 30
+    else:
+        number_of_day = int(number_of_day)
+    if number_of_day < 1:
+        number_of_day = 30
+        
+    data_oldest_date = datetime.datetime.now() - datetime.timedelta(number_of_day)
+    results = Result.objects.filter(report_time__gt = data_oldest_date, test_spec= test_spec).order_by("report_time", "server")
+    return render(request, "result_list.html", locals())
+
+def get_last_complete_sunday_and_saturday(target_date):
+    if not isinstance(target_date, datetime.date):
+        return None
     
+    offset = (target_date.weekday()+2) % 7
+    last_saturday = target_date - datetime.timedelta(days=offset)
+    sunday_before_last_saturday = last_saturday - datetime.timedelta(days=6)
+    
+    return (sunday_before_last_saturday, last_saturday)
+
+def gen_aggregate_report_link(request):
+    target_date = datetime.date.today()
+    dates_list = []
+    for i in xrange(20):
+        result = get_last_complete_sunday_and_saturday(target_date)
+        if result is None:
+            break
+        dates_list.append(result)
+        target_date = result[0]    
+    
+    return render(request, "gen_aggregate_report_link.html", locals())
+
+def get_test_aggregate_report(request, start_time_str, end_time_str):
+    test_spec = settings.AGGREGATE_REPORT_PROFILE
+    start_time = datetime.datetime.strptime(start_time_str + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+    end_time = datetime.datetime.strptime(end_time_str + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+    result = Result.objects.filter(report_time__gt = start_time, report_time__lt = end_time, test_spec = test_spec).values("server__name", "test_vm", "test_spec").annotate(Min("read_iops"), Max("read_iops"), Avg("read_iops"), Min("write_iops"), Max("write_iops"), Avg("write_iops"), Min("total_iops"), Max("total_iops"), Avg("total_iops"), Min("avg_read_latency"), Max("avg_read_latency"), Avg("avg_read_latency"), Min("avg_write_latency"), Max("avg_write_latency"), Avg("avg_write_latency")).order_by("server__name", "test_vm")
+    
+    return render(request, "get_test_aggregate_report.html", locals())

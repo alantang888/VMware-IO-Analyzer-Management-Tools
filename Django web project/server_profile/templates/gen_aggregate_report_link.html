@@ -1,0 +1,5 @@
+{% for dates in dates_list %}
+
+<a href="{% url "get_test_aggregate_report" start_time_str=dates.0|date:"Y-m-d" end_time_str=dates.1|date:"Y-m-d" %}">{{ dates.0|date:"Y-m-d" }} - {{ dates.1|date:"Y-m-d" }}</a> <br/>
+
+{% endfor %}

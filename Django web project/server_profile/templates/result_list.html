@@ -40,5 +40,8 @@
 		{% endfor %}
 		{% endif %}
 		</table>
+		{% if results %}
+		Total number of record: {{ results.count }}
+		{% endif %}
 	</body>
 </html>

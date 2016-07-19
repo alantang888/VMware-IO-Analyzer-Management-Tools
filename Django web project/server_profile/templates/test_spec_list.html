@@ -1,0 +1,14 @@
+{% if test_specs %}
+		<table border="1">
+			<tr>
+			<td>Test Specs</td>
+			</tr>
+		{% for spec in test_specs %}
+			<tr>
+			<td><a href="{% url "test_spec_report" test_spec=spec.test_spec %}">{{ spec.test_spec }}</a></td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% else %}
+			No test spec found.
+		{% endif %}
