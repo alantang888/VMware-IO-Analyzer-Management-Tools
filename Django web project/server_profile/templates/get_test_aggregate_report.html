@@ -41,7 +41,7 @@ Report for {{ test_spec }} on {{ start_time|date:"Y-m-d" }} to {{ end_time|date:
 		{% for san in result %}
 			<tr>
 			<td>{{ san.server__name }}</td>
-			<td>{{ san.test_vm }}</td>
+			<td><a href="{% url "display_test_profile_result_in_range" server_name=san.server__name test_vm=san.test_vm test_spec=test_spec start_time_str=start_time|date:"Y-m-d" end_time_str=end_time|date:"Y-m-d" %}">{{ san.test_vm }}</a></td>
 			
 			
 			<td>{{ san.total_iops__min|floatformat }}</td>

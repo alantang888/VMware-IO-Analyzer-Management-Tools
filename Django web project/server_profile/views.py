@@ -76,14 +76,23 @@ def test_profile_list(request, server_name, test_vm):
     test_specs = Result.objects.filter(server__name = server_name, test_vm = test_vm).values('test_spec').order_by("test_spec").distinct()
     return render(request, "test_profile_list.html", locals())
     
-def display_test_profile_result(request, server_name, test_vm, test_spec):
+def display_test_profile_result(request, server_name, test_vm, test_spec, start_time_str=None, end_time_str=None):
+    start_time = None
+    end_time = None
+    if start_time_str is None or end_time_str is None:
+        start_time = datetime.datetime.now() - datetime.timedelta(90)
+        end_time = datetime.datetime.now()
+    else:
+        start_time = datetime.datetime.strptime(start_time_str + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+        end_time = datetime.datetime.strptime(end_time_str + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+    
     server_name = urlunquote(server_name)
     test_vm = urlunquote(test_vm)
     test_spec = urlunquote(test_spec)
-    data_oldest_date = datetime.datetime.now() - datetime.timedelta(90)
     
-    iops_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).filter(report_time__gt = data_oldest_date).order_by("report_time").values_list("report_time","total_iops", "read_iops", "write_iops")
-    latency_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).filter(report_time__gt = data_oldest_date).order_by("report_time").values_list("report_time","avg_read_latency", "avg_write_latency")
+    
+    iops_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).filter(report_time__range = (start_time, end_time)).order_by("report_time").values_list("report_time","total_iops", "read_iops", "write_iops")
+    latency_datas = Result.objects.filter(server__name = server_name, test_vm = test_vm, test_spec= test_spec).filter(report_time__range = (start_time, end_time)).order_by("report_time").values_list("report_time","avg_read_latency", "avg_write_latency")
     
     iops_init_end_date = iops_datas.last()[0]
     iops_init_start_date = iops_init_end_date - datetime.timedelta(7)
